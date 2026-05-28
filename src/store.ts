@@ -1,4 +1,9 @@
-export type CreativeStatus = "approved" | "blocked" | "pending" | "escalated";
+export type CreativeStatus =
+  | "processing"
+  | "approved"
+  | "blocked"
+  | "pending"
+  | "escalated";
 
 export interface QueueItem {
   id: string;
@@ -49,14 +54,30 @@ export function resolveItem(
   return item;
 }
 
+export function updateQueueItem(
+  id: string,
+  patch: Partial<Omit<QueueItem, "id" | "submittedAt">>,
+): QueueItem | null {
+  const item = queue.find((q) => q.id === id);
+  if (!item) return null;
+  Object.assign(item, patch);
+  return item;
+}
+
+export function resetQueue() {
+  queue.length = 0;
+  itemCounter = 1;
+}
+
 export function getStats() {
   const total = queue.length;
+  const processing = queue.filter((q) => q.status === "processing").length;
   const approved = queue.filter((q) => q.status === "approved").length;
   const blocked = queue.filter((q) => q.status === "blocked").length;
   const escalated = queue.filter(
     (q) => q.status === "pending" || q.status === "escalated",
   ).length;
-  return { total, approved, blocked, escalated };
+  return { total, processing, approved, blocked, escalated };
 }
 
 export function serializeQueueItem(item: QueueItem) {

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BrandGuard Hardcoded Demo</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="header">
+        <div class="brand">
+          <span class="brand-dot"></span>
+          <h1>BrandGuard Demo Console</h1>
+        </div>
+        <div class="live">
+          <span id="liveLabel">Simulated</span>
+          <span id="pendingLabel">0 need review</span>
+        </div>
+      </header>
+
+      <section class="stats" id="stats"></section>
+
+      <section class="controls">
+        <button id="startBtn">Start Simulation</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+      </section>
+
+      <section id="queue" class="queue"></section>
+    </main>
+
+    <script type="module" src="./main.js"></script>
+  </body>
+</html>

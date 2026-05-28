@@ -1,10 +1,19 @@
 import { McpServer } from "skybridge/server";
 import { z } from "zod";
+import { startDemoInfluxLoop, stopDemoInfluxLoop } from "./lib/demo-influx.js";
 import { initOvermind } from "./lib/overmind.js";
 import { handleGetQueue, handleResolveItem } from "./tools/get-queue.js";
 import { handleScoreCreative } from "./tools/score-creative.js";
 
 await initOvermind();
+startDemoInfluxLoop();
+
+process.once("SIGINT", () => {
+  stopDemoInfluxLoop();
+});
+process.once("SIGTERM", () => {
+  stopDemoInfluxLoop();
+});
 
 const reviewQueueView = {
   component: "review-queue" as const,

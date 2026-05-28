@@ -14,7 +14,9 @@ export function buildQueuePayload(filter: "all" | "pending" | "approved" | "bloc
           (q) =>
             q.status === filter ||
             (filter === "pending" &&
-              (q.status === "pending" || q.status === "escalated")),
+              (q.status === "pending" ||
+                q.status === "escalated" ||
+                q.status === "processing")),
         );
 
   return {

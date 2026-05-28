@@ -22,6 +22,11 @@ cp .env.example .env
 # SCORE_THRESHOLD_APPROVE=70
 # SCORE_THRESHOLD_BLOCK=40
 # SKYBRIDGE_VIEW_DOMAIN=https://skybridge.tech
+# BRANDGUARD_FORCE_HEURISTIC=0
+# BRANDGUARD_DEMO_SIM=0
+# BRANDGUARD_DEMO_INFLUX_MS=2500
+# BRANDGUARD_DEMO_PROCESSING_MS=1500
+# BRANDGUARD_DEMO_INFLUX_MAX=0
 npm install
 ```
 
@@ -110,8 +115,49 @@ This forces heuristic mode for reproducible statuses:
 - Nike aggression copy -> blocked
 - Barclays urgency copy -> escalated
 - Dyson neutral copy -> approved
+- processing lifecycle transition (`processing` -> final status)
+- capped synthetic influx simulation and queue accounting checks
 
 Saved evidence snapshot: `docs/demo-verification.md`.
+
+## Demo simulation mode (high-throughput, API-free)
+
+To simulate a live influx of creatives with visible processing delay in queue:
+
+```bash
+# in .env
+BRANDGUARD_DEMO_SIM=1
+BRANDGUARD_DEMO_INFLUX_MS=2500
+BRANDGUARD_DEMO_PROCESSING_MS=1500
+BRANDGUARD_DEMO_INFLUX_MAX=0
+BRANDGUARD_FORCE_HEURISTIC=1
+
+# then run
+npm run dev
+```
+
+Notes:
+- `BRANDGUARD_DEMO_SIM=1` enables synthetic submissions in the background.
+- `BRANDGUARD_DEMO_PROCESSING_MS` controls the per-item scoring delay.
+- `BRANDGUARD_DEMO_INFLUX_MS` controls arrival cadence.
+- `BRANDGUARD_DEMO_INFLUX_MAX=0` means run continuously until server stops.
+
+## Hardcoded standalone web demo (no integration)
+
+If you want a pure browser demo with zero MCP/API integration:
+
+```bash
+npm run demo:web
+```
+
+Then open:
+- `http://localhost:4173`
+
+This standalone demo is fully hardcoded and simulates:
+- prompt influx,
+- processing delay,
+- final score decisions (blocked/escalated/approved),
+- live stats updates.
 
 ## Supported brands
 

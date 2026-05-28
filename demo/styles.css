@@ -1,0 +1,183 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    sans-serif;
+  background: #0f1320;
+  color: #dbe2f2;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.brand-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #d85a30;
+}
+
+.live {
+  font-size: 13px;
+  color: #99a5c0;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat {
+  background: #171d30;
+  border: 1px solid #2b3550;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #99a5c0;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.controls button {
+  background: #1f2a44;
+  color: #dbe2f2;
+  border: 1px solid #334166;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.queue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card {
+  background: #121a2c;
+  border: 1px solid #2b3550;
+  border-left: 4px solid #4f6ef7;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.meta {
+  color: #8e9ab5;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+.badge {
+  font-size: 11px;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.creative {
+  margin-top: 8px;
+  background: #18233b;
+  color: #acb9d4;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-style: italic;
+}
+
+.meter {
+  margin-top: 8px;
+}
+
+.meter-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 5px;
+}
+
+.meter-label {
+  width: 60px;
+  color: #8e9ab5;
+  font-size: 12px;
+}
+
+.bar-wrap {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: #2b3550;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+}
+
+.meter-value {
+  width: 28px;
+  text-align: right;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.reasons {
+  margin-top: 8px;
+  color: #9ba8c2;
+  font-size: 12px;
+}
+
+.reasons div {
+  margin-top: 3px;
+}

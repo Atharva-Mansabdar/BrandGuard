@@ -10,14 +10,20 @@ interface QueueItem {
   cpcBid: number;
   safetyScore: number;
   brandFitScore: number;
-  status: "approved" | "blocked" | "pending" | "escalated";
+  status: "processing" | "approved" | "blocked" | "pending" | "escalated";
   reasons: string[];
   tavilyContext: string;
   submittedAt: string;
 }
 
 interface QueueData {
-  stats: { total: number; approved: number; blocked: number; escalated: number };
+  stats: {
+    total: number;
+    processing: number;
+    approved: number;
+    blocked: number;
+    escalated: number;
+  };
   items: QueueItem[];
 }
 
@@ -28,12 +34,14 @@ function scoreColor(score: number) {
 }
 
 function statusColor(status: string) {
+  if (status === "processing") return "#4F6EF7";
   if (status === "approved") return "#1D9E75";
   if (status === "blocked") return "#E24B4A";
   return "#EF9F27";
 }
 
 function statusLabel(status: string) {
+  if (status === "processing") return "Processing";
   if (status === "approved") return "Approved";
   if (status === "blocked") return "Blocked";
   return "Needs review";
@@ -95,6 +103,13 @@ export default function ReviewQueue() {
     void callTool({ filter: "all" });
   }, [callTool]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void callTool({ filter: "all" });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [callTool]);
+
   function resolve(id: string, decision: "approved" | "blocked") {
     setResolvingId(id);
     void callResolve({ id, decision });
@@ -103,7 +118,10 @@ export default function ReviewQueue() {
   const stats = data?.stats;
   const items = data?.items ?? [];
   const pendingCount = items.filter(
-    (i) => i.status === "pending" || i.status === "escalated",
+    (i) =>
+      i.status === "processing" ||
+      i.status === "pending" ||
+      i.status === "escalated",
   ).length;
 
   return (
@@ -151,7 +169,7 @@ export default function ReviewQueue() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateColumns: "repeat(5, 1fr)",
             gap: 10,
             marginBottom: 20,
           }}
@@ -162,6 +180,7 @@ export default function ReviewQueue() {
               value: stats.total,
               color: "var(--color-text-primary)",
             },
+            { label: "Processing", value: stats.processing, color: "#4F6EF7" },
             { label: "Auto-approved", value: stats.approved, color: "#1D9E75" },
             { label: "Escalated", value: stats.escalated, color: "#BA7517" },
             { label: "Blocked", value: stats.blocked, color: "#E24B4A" },
@@ -253,13 +272,17 @@ export default function ReviewQueue() {
                 padding: "3px 9px",
                 borderRadius: 4,
                 background:
-                  item.status === "approved"
+                  item.status === "processing"
+                    ? "#E8ECFF"
+                    : item.status === "approved"
                     ? "#E1F5EE"
                     : item.status === "blocked"
                       ? "#FCEBEB"
                       : "#FAEEDA",
                 color:
-                  item.status === "approved"
+                  item.status === "processing"
+                    ? "#2F46B9"
+                    : item.status === "approved"
                     ? "#085041"
                     : item.status === "blocked"
                       ? "#A32D2D"
@@ -318,9 +341,10 @@ export default function ReviewQueue() {
               >
                 <div
                   style={{
-                    width: `${score}%`,
+                    width: item.status === "processing" ? "18%" : `${score}%`,
                     height: "100%",
-                    background: scoreColor(score),
+                    background:
+                      item.status === "processing" ? "#8FA0FA" : scoreColor(score),
                     borderRadius: 3,
                   }}
                 />
@@ -331,15 +355,28 @@ export default function ReviewQueue() {
                   fontWeight: 500,
                   minWidth: 28,
                   textAlign: "right",
-                  color: scoreColor(score),
+                  color:
+                    item.status === "processing" ? "#4F6EF7" : scoreColor(score),
                 }}
               >
-                {score}
+                {item.status === "processing" ? "..." : score}
               </span>
             </div>
           ))}
 
-          {item.reasons.length > 0 && (
+          {item.status === "processing" && (
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 12,
+                color: "#4F6EF7",
+              }}
+            >
+              Simulating Tavily + scoring pipeline...
+            </div>
+          )}
+
+          {item.status !== "processing" && item.reasons.length > 0 && (
             <div style={{ marginTop: 8 }}>
               {item.reasons.map((r, i) => (
                 <div
@@ -366,7 +403,8 @@ export default function ReviewQueue() {
             </div>
           )}
 
-          {formatTavilySignals(item.tavilyContext).length > 0 && (
+          {item.status !== "processing" &&
+            formatTavilySignals(item.tavilyContext).length > 0 && (
             <div
               style={{
                 marginTop: 10,
