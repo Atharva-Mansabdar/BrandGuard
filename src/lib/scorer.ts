@@ -70,26 +70,35 @@ function heuristicScore(
   const lower = creativeText.toLowerCase();
   let safetyScore = 78;
   const reasons: string[] = [];
+  const financialUrgencyPhrases = [
+    "lock in",
+    "before it",
+    "window closes",
+    "rates dropping",
+    "act now",
+  ];
 
   for (const kw of policy.escalationKeywords) {
     if (lower.includes(kw.toLowerCase())) {
-      safetyScore = Math.min(safetyScore, 32);
-      reasons.push(`Escalation keyword detected: "${kw}"`);
+      const isFinancialUrgencyTrigger =
+        policy.industry === "financial services" &&
+        financialUrgencyPhrases.some((phrase) => lower.includes(phrase));
+      safetyScore = Math.min(safetyScore, isFinancialUrgencyTrigger ? 45 : 32);
+      reasons.push(
+        isFinancialUrgencyTrigger
+          ? "FCA urgency language in financial promotion"
+          : `Escalation keyword detected: "${kw}"`,
+      );
       break;
     }
   }
 
   if (policy.industry === "financial services") {
-    const urgency = [
-      "lock in",
-      "before it",
-      "window closes",
-      "rates dropping",
-      "act now",
-    ];
-    if (urgency.some((p) => lower.includes(p))) {
+    if (financialUrgencyPhrases.some((p) => lower.includes(p))) {
       safetyScore = Math.min(safetyScore, 42);
-      reasons.push("FCA urgency language in financial promotion");
+      if (!reasons.includes("FCA urgency language in financial promotion")) {
+        reasons.push("FCA urgency language in financial promotion");
+      }
     }
   }
 
@@ -138,7 +147,8 @@ export async function scoreCreative(
       creativeLength: creativeText.length,
     },
     async () => {
-      if (!anthropic) {
+      const forceHeuristic = process.env.BRANDGUARD_FORCE_HEURISTIC === "1";
+      if (forceHeuristic || !anthropic) {
         return heuristicScore(creativeText, policy, enrichment);
       }
 

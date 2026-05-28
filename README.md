@@ -16,7 +16,12 @@ Built for Cursor AdTech Hackathon 2026.
 
 ```bash
 cp .env.example .env
-# Add ANTHROPIC_API_KEY and TAVILY_API_KEY (optional: OVERMIND_API_KEY)
+# Required: ANTHROPIC_API_KEY and TAVILY_API_KEY
+# Optional: OVERMIND_API_KEY
+# Defaults:
+# SCORE_THRESHOLD_APPROVE=70
+# SCORE_THRESHOLD_BLOCK=40
+# SKYBRIDGE_VIEW_DOMAIN=https://skybridge.tech
 npm install
 ```
 
@@ -33,6 +38,20 @@ npm run dev:tunnel
 ```
 
 Connect the printed `/mcp` URL in Claude → Settings → Integrations → Add MCP server (name: **BrandGuard**).
+
+## Deploy and audit
+
+Stable public endpoint:
+
+```bash
+alpic deploy --project-name brandguard --runtime node24 --env-file .env
+```
+
+Compatibility check (Claude.ai + ChatGPT MCP):
+
+```bash
+alpic audit --url https://brandguard.alpic.live/mcp
+```
 
 ## MCP tools
 
@@ -74,6 +93,25 @@ Show me the review queue
 # /overmind-generate-spec-and-dataset brandguard
 # /overmind-optimize-agent brandguard
 ```
+
+Runtime tracing notes:
+- `OVERMIND_API_KEY` enables server-side trace emission for `score_creative`.
+- If the Overmind JS SDK is unavailable in the runtime, scoring still works and tracing is explicitly disabled with a startup warning.
+
+## Demo verification
+
+Run a deterministic end-to-end check of the three demo creatives:
+
+```bash
+npm run verify:demo
+```
+
+This forces heuristic mode for reproducible statuses:
+- Nike aggression copy -> blocked
+- Barclays urgency copy -> escalated
+- Dyson neutral copy -> approved
+
+Saved evidence snapshot: `docs/demo-verification.md`.
 
 ## Supported brands
 

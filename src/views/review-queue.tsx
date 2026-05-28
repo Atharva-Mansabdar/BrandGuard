@@ -39,6 +39,15 @@ function statusLabel(status: string) {
   return "Needs review";
 }
 
+function formatTavilySignals(rawContext: string): string[] {
+  if (!rawContext.trim()) return [];
+  return rawContext
+    .split("|")
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
 function isQueueData(value: unknown): value is QueueData {
   return (
     typeof value === "object" &&
@@ -352,6 +361,41 @@ export default function ReviewQueue() {
                     ›
                   </span>
                   {r}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {formatTavilySignals(item.tavilyContext).length > 0 && (
+            <div
+              style={{
+                marginTop: 10,
+                borderTop: "0.5px solid var(--color-border-tertiary)",
+                paddingTop: 8,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "var(--color-text-secondary)",
+                  marginBottom: 4,
+                }}
+              >
+                Tavily context
+              </div>
+              {formatTavilySignals(item.tavilyContext).map((signal, index) => (
+                <div
+                  key={`${item.id}-signal-${index}`}
+                  style={{
+                    fontSize: 12,
+                    color: "var(--color-text-secondary)",
+                    marginBottom: 3,
+                    display: "flex",
+                    gap: 6,
+                  }}
+                >
+                  <span style={{ color: "#7A56CC" }}>•</span>
+                  {signal}
                 </div>
               ))}
             </div>
